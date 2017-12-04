@@ -19,6 +19,7 @@
 #ifdef __cplusplus
 
 #include "../common.h"
+#include "../core/Json.hpp"
 #include "ImageTable.h"
 #include "StringTable.h"
 
@@ -77,6 +78,7 @@ public:
     const rct_object_entry *    GetObjectEntry() const { return &_objectEntry; }
     virtual void *              GetLegacyData() abstract;
 
+    virtual void ReadJson(IReadObjectContext * context, const json_t * root) { }
     virtual void ReadLegacy(IReadObjectContext * context, IStream * stream) abstract;
     virtual void Load() abstract;
     virtual void Unload() abstract;
