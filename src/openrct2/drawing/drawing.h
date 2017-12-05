@@ -357,6 +357,7 @@ void scrolling_text_initialise_bitmaps();
 sint32 scrolling_text_setup(paint_session * session, rct_string_id stringId, uint16 scroll, uint16 scrollingMode);
 
 rct_size16 FASTCALL gfx_get_sprite_size(uint32 image_id);
+size_t g1_calculate_data_size(const rct_g1_element * g1);
 
 #ifdef __cplusplus
 }
