@@ -228,31 +228,64 @@ void research_finish_item(uint32 entryIndex)
 
             ride_entry_set_invented(rideEntryIndex);
 
-            if (!(rideEntry->flags & RIDE_ENTRY_FLAG_SEPARATE_RIDE))
+            bool seenRideEntry[MAX_RIDE_OBJECTS];
+
+            rct_research_item * researchItem = gResearchItems;
+            for (; researchItem->entryIndex != RESEARCHED_ITEMS_END; researchItem++)
             {
-                for (sint32 i = 0; i < MAX_RESEARCHED_TRACK_TYPES; i++)
+                if (
+                    researchItem->entryIndex != RESEARCHED_ITEMS_SEPARATOR &&
+                    researchItem->entryIndex >= RESEARCH_ENTRY_RIDE_MASK
+                    )
+                {
+                    uint8 index = researchItem->entryIndex & 0xFF;
+                    seenRideEntry[index] = true;
+                }
+            }
+
+            // RCT2 made non-separated vehicles available at once, by removing all but one from research.
+            // To ensure old files keep working, look for ride entries not in research, and make them available as well.
+            for (sint32 i = 0; i < MAX_RESEARCHED_RIDE_ENTRIES; i++)
+            {
+                if (!seenRideEntry[i])
                 {
                     rct_ride_entry * rideEntry2 = get_ride_entry(i);
-                    if (rideEntry2 == nullptr)
+                    if (rideEntry2 != nullptr)
                     {
-                        continue;
-                    }
-                    if ((rideEntry2->flags & RIDE_ENTRY_FLAG_SEPARATE_RIDE))
-                    {
-                        continue;
-                    }
-
-                    for (uint8 j = 0; j < MAX_RIDE_TYPES_PER_RIDE_ENTRY; j++)
-                    {
-                        if (rideEntry2->ride_type[j] == base_ride_type)
+                        for (uint8 j = 0; j < MAX_RIDE_TYPES_PER_RIDE_ENTRY; j++)
                         {
-                            ride_entry_set_invented(i);
-                            break;
+                            if (rideEntry2->ride_type[j] == base_ride_type)
+                            {
+                                ride_entry_set_invented(i);
+                                break;
+                            }
                         }
                     }
                 }
             }
 
+
+//            for (sint32 i = 0; i < MAX_RESEARCHED_TRACK_TYPES; i++)
+//            {
+//                rct_ride_entry * rideEntry2 = get_ride_entry(i);
+//                if (rideEntry2 == nullptr)
+//                {
+//                    continue;
+//                }
+//                if ((rideEntry2->flags & RIDE_ENTRY_FLAG_SEPARATE_RIDE))
+//                {
+//                    continue;
+//                }
+//
+//                for (uint8 j = 0; j < MAX_RIDE_TYPES_PER_RIDE_ENTRY; j++)
+//                {
+//                    if (rideEntry2->ride_type[j] == base_ride_type)
+//                    {
+//                        ride_entry_set_invented(i);
+//                        break;
+//                    }
+//                }
+//            }
 
             // If a vehicle should be listed separately (maze, mini golf, flat rides, shops)
             if (RideGroupManager::RideTypeIsIndependent(base_ride_type))
@@ -856,17 +889,18 @@ rct_string_id research_item_get_name(uint32 researchItem)
 {
     if (researchItem >= RESEARCH_ENTRY_RIDE_MASK)
     {
-        rct_ride_entry * rideEntry = get_ride_entry(researchItem & 0xFF);
+        const rct_ride_entry * rideEntry = get_ride_entry(researchItem & 0xFF);
         if (rideEntry == nullptr)
         {
             return 0;
         }
-        else if (rideEntry->flags & RIDE_ENTRY_FLAG_SEPARATE_RIDE)
+        else if (RideGroupManager::RideTypeIsIndependent(ride_entry_get_first_non_null_ride_type(rideEntry)))
         {
             return rideEntry->naming.name;
         }
         else
         {
+            // TODO: Show vehicle name and ride group name
             uint8 baseRideType = research_get_ride_base_type(researchItem);
             // Makes sure the correct track name is displayed, e.g. Hyper-Twister instead of Steel Twister.
             return research_get_friendly_base_ride_type_name(baseRideType, rideEntry);
@@ -894,7 +928,7 @@ uint8 research_get_ride_base_type(sint32 researchItem)
 /**
  * This will return the name of the base ride type or ride group, as seen in the research window.
  */
-rct_string_id research_get_friendly_base_ride_type_name(uint8 trackType, rct_ride_entry * rideEntry)
+rct_string_id research_get_friendly_base_ride_type_name(uint8 trackType, const rct_ride_entry * rideEntry)
 {
     if (RideGroupManager::RideTypeHasRideGroups(trackType))
     {

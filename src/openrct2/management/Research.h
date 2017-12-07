@@ -124,7 +124,7 @@ void reset_researched_scenery_items();
 void reset_researched_ride_types_and_entries();
 rct_string_id research_item_get_name(uint32 researchItem);
 uint8 research_get_ride_base_type(sint32 researchItem);
-rct_string_id research_get_friendly_base_ride_type_name(uint8 trackType, rct_ride_entry * rideEntry);
+rct_string_id research_get_friendly_base_ride_type_name(uint8 trackType, const rct_ride_entry * rideEntry);
 void research_remove_flags();
 
 #ifdef __cplusplus
