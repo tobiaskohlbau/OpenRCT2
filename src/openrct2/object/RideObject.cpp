@@ -75,9 +75,9 @@ void RideObject::ReadLegacy(IReadObjectContext * context, IStream * stream)
     _legacyType.shop_item = stream->ReadValue<uint8>();
     _legacyType.shop_item_secondary = stream->ReadValue<uint8>();
 
-    GetStringTable()->Read(context, stream, OBJ_STRING_ID_NAME);
-    GetStringTable()->Read(context, stream, OBJ_STRING_ID_DESCRIPTION);
-    GetStringTable()->Read(context, stream, OBJ_STRING_ID_CAPACITY);
+    GetStringTable().Read(context, stream, OBJ_STRING_ID_NAME);
+    GetStringTable().Read(context, stream, OBJ_STRING_ID_DESCRIPTION);
+    GetStringTable().Read(context, stream, OBJ_STRING_ID_CAPACITY);
 
     // Read preset colours, by default there are 32
     _presetColours.count = stream->ReadValue<uint8>();
@@ -107,7 +107,7 @@ void RideObject::ReadLegacy(IReadObjectContext * context, IStream * stream)
         _peepLoadingPositionsCount[i] = numPeepLoadingPositions;
     }
 
-    GetImageTable()->Read(context, stream);
+    GetImageTable().Read(context, stream);
 
     // Validate properties
     if (_legacyType.excitement_multiplier > 75)
@@ -128,12 +128,12 @@ void RideObject::ReadLegacy(IReadObjectContext * context, IStream * stream)
 
 void RideObject::Load()
 {
-    GetStringTable()->Sort();
+    GetStringTable().Sort();
     _legacyType.naming.name = language_allocate_object_string(GetName());
     _legacyType.naming.description = language_allocate_object_string(GetDescription());
     _legacyType.capacity = language_allocate_object_string(GetCapacity());
     _legacyType.vehicleName = language_allocate_object_string(GetVehicleName());
-    _legacyType.images_offset = gfx_object_allocate_images(GetImageTable()->GetImages(), GetImageTable()->GetCount());
+    _legacyType.images_offset = gfx_object_allocate_images(GetImageTable().GetImages(), GetImageTable().GetCount());
     _legacyType.vehicle_preset_list = &_presetColours;
 
     sint32 cur_vehicle_images_offset = _legacyType.images_offset + MAX_RIDE_TYPES_PER_RIDE_ENTRY;
@@ -308,7 +308,7 @@ void RideObject::Unload()
     language_free_object_string(_legacyType.naming.description);
     language_free_object_string(_legacyType.capacity);
     language_free_object_string(_legacyType.vehicleName);
-    gfx_object_free_images(_legacyType.images_offset, GetImageTable()->GetCount());
+    gfx_object_free_images(_legacyType.images_offset, GetImageTable().GetCount());
 
     _legacyType.naming.name = 0;
     _legacyType.naming.description = 0;
@@ -743,6 +743,6 @@ void RideObject::ReadJson(IReadObjectContext * context, const json_t * root)
     vehicle0->sprite_flags |= VEHICLE_SPRITE_FLAG_FLAT;
     vehicle0->base_image_id = 0;
 
-    ObjectJsonHelpers::LoadStrings(root, *GetStringTable());
-    ObjectJsonHelpers::LoadImages(root, *GetImageTable());
+    ObjectJsonHelpers::LoadStrings(root, GetStringTable());
+    ObjectJsonHelpers::LoadImages(root, GetImageTable());
 }

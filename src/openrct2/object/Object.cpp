@@ -59,7 +59,7 @@ std::string Object::GetString(uint8 index) const
     }
     else if (sz.empty())
     {
-        sz = GetStringTable()->GetString(index);
+        sz = GetStringTable().GetString(index);
     }
     return sz;
 }
