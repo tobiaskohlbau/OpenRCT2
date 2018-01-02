@@ -41,7 +41,7 @@
 #include "peep/Staff.h"
 #include "platform/platform.h"
 #include "rct1.h"
-#include "ride/ride.h"
+#include "ride/Ride.h"
 #include "ride/ride_ratings.h"
 #include "ride/Track.h"
 #include "ride/TrackDesign.h"
@@ -58,7 +58,7 @@
 #include "world/footpath.h"
 #include "world/map.h"
 #include "world/map_animation.h"
-#include "world/park.h"
+#include "world/Park.h"
 #include "world/scenery.h"
 #include "world/sprite.h"
 #include "world/water.h"
@@ -1345,8 +1345,13 @@ void game_load_init()
     {
         viewport_init_all();
         game_create_windows();
+        mainWindow = window_get_main();
     }
-    mainWindow = window_get_main();
+    else
+    {
+        mainWindow = window_get_main();
+        window_unfollow_sprite(mainWindow);
+    }
 
     if (mainWindow != nullptr)
     {

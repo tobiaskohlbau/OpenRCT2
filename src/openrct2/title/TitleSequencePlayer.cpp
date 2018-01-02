@@ -289,6 +289,9 @@ private:
         case TITLE_SCRIPT_SPEED:
             gGameSpeed = Math::Clamp<uint8>(1, command->Speed, 4);
             break;
+        case TITLE_SCRIPT_FOLLOW:
+            FollowSprite(command->SpriteIndex);
+            break;
         case TITLE_SCRIPT_RESTART:
             Reset();
             break;
@@ -339,6 +342,21 @@ private:
             }
             break;
         }
+        case TITLE_SCRIPT_LOADSC:
+        {
+            bool loadSuccess = false;
+            auto scenario = GetScenarioRepository()->GetByInternalName(command->Scenario);
+            if (scenario != nullptr)
+            {
+                loadSuccess = LoadParkFromFile(scenario->path);
+            }
+            if (!loadSuccess)
+            {
+                Console::Error::WriteLine("Failed to load: \"%s\" for the title sequence.", command->Scenario);
+                return false;
+            }
+            break;
+        }
         }
         return true;
     }
@@ -361,6 +379,24 @@ private:
             {
                 window_rotate_camera(w, 1);
             }
+        }
+    }
+
+    void FollowSprite(uint16 spriteIndex)
+    {
+        rct_window * w = window_get_main();
+        if (w != nullptr)
+        {
+            window_follow_sprite(w, spriteIndex);
+        }
+    }
+
+    void UnfollowSprite()
+    {
+        rct_window * w = window_get_main();
+        if (w != nullptr)
+        {
+            window_unfollow_sprite(w);
         }
     }
 
@@ -530,7 +566,7 @@ private:
     void FixViewLocation()
     {
         rct_window * w = window_get_main();
-        if (w != nullptr)
+        if (w != nullptr && w->viewport_smart_follow_sprite == SPRITE_INDEX_NULL)
         {
             if (w->width != _lastScreenWidth ||
                 w->height != _lastScreenHeight)

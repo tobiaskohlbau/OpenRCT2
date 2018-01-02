@@ -40,7 +40,7 @@
 #include "../object.h"
 #include "../OpenRCT2.h"
 #include "../peep/Staff.h"
-#include "../ride/ride.h"
+#include "../ride/Ride.h"
 #include "../ride/ride_ratings.h"
 #include "../ride/TrackData.h"
 #include "../scenario/scenario.h"
@@ -48,7 +48,7 @@
 #include "../util/Util.h"
 #include "../world/Climate.h"
 #include "../world/map_animation.h"
-#include "../world/park.h"
+#include "../world/Park.h"
 #include "../world/sprite.h"
 
 S6Exporter::S6Exporter()

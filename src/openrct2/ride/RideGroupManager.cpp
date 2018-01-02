@@ -22,7 +22,7 @@
 
 #include "../localisation/string_ids.h"
 #include "../management/Research.h"
-#include "ride.h"
+#include "Ride.h"
 #include "ride_data.h"
 #include "Track.h"
 #include "TrackData.h"
@@ -433,24 +433,6 @@ bool RideGroupManager::RideTypeIsIndependent(const uint8 rideType)
 
     assert(false);
     return true;
-}
-
-extern "C"
-{
-    const RideGroup * get_ride_group(uint8 rideType, const rct_ride_entry * rideEntry)
-    {
-        return RideGroupManager::GetRideGroup(rideType, rideEntry);
-    }
-
-    bool ride_type_has_ride_groups(const uint8 rideType)
-    {
-        return RideGroupManager::RideTypeHasRideGroups(rideType);
-    }
-
-    bool rideTypeIsIndependent(const uint8 rideType)
-    {
-        return RideGroupManager::RideTypeIsIndependent(rideType);
-    }
 }
 
 const uint8 gRideCategories[] = {

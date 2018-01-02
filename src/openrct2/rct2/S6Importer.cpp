@@ -41,14 +41,14 @@
 #include "../management/Research.h"
 #include "../OpenRCT2.h"
 #include "../peep/Staff.h"
-#include "../ride/ride.h"
+#include "../ride/Ride.h"
 #include "../ride/ride_ratings.h"
 #include "../scenario/scenario.h"
 #include "../util/SawyerCoding.h"
 #include "../world/Climate.h"
 #include "../world/Entrance.h"
 #include "../world/map_animation.h"
-#include "../world/park.h"
+#include "../world/Park.h"
 
 class ObjectLoadException : public Exception
 {

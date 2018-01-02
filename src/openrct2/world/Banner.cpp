@@ -24,12 +24,12 @@
 
 #include "Banner.h"
 #include "map.h"
-#include "park.h"
+#include "Park.h"
 #include "scenery.h"
 #include "../Game.h"
 #include "../interface/window.h"
 #include "../localisation/localisation.h"
-#include "../ride/ride.h"
+#include "../ride/Ride.h"
 #include "../ride/Track.h"
 
 rct_banner gBanners[MAX_BANNERS];

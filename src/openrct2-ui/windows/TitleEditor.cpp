@@ -978,14 +978,23 @@ static void window_title_editor_scrollpaint_commands(rct_window * w, rct_drawpix
             commandName = STR_TITLE_EDITOR_COMMAND_SPEED;
             set_format_arg(0, rct_string_id, SpeedNames[command->Speed - 1]);
             break;
+        case TITLE_SCRIPT_FOLLOW:
+            commandName = STR_TITLE_EDITOR_COMMAND_FOLLOW;
+            if (command->SpriteIndex == SPRITE_INDEX_NULL)
+            {
+                commandName = STR_TITLE_EDITOR_COMMAND_FOLLOW_NO_SPRITE;
+            }
+            else
+            {
+                set_format_arg(0, uintptr_t, (uintptr_t)command->SpriteName);
+            }
+            break;
         case TITLE_SCRIPT_WAIT:
             commandName = STR_TITLE_EDITOR_COMMAND_WAIT;
             set_format_arg(0, uint16, command->Milliseconds);
             break;
         case TITLE_SCRIPT_RESTART:
             commandName = STR_TITLE_EDITOR_RESTART;
-            // TODO: Why the format arg?
-            set_format_arg(0, uint16, command->Zoom);
             break;
         case TITLE_SCRIPT_END:
             commandName = STR_TITLE_EDITOR_END;
@@ -998,6 +1007,27 @@ static void window_title_editor_scrollpaint_commands(rct_window * w, rct_drawpix
             if (scenario_get_source_desc_by_id(command->SaveIndex, &desc))
             {
                 name = desc.title;
+            }
+            set_format_arg(0, uintptr_t, name);
+            break;
+        }
+        case TITLE_SCRIPT_LOADSC:
+        {
+            commandName = STR_TITLE_EDITOR_COMMAND_LOAD_FILE;
+            const char * name = "";
+            auto scenario =
+                GetScenarioRepository()->GetByInternalName(command->Scenario);
+            if (command->Scenario[0] == '\0')
+            {
+                commandName = STR_TITLE_EDITOR_COMMAND_LOAD_NO_SCENARIO;
+            }
+            else if (scenario != nullptr)
+            {
+                name = scenario->name;
+            }
+            else
+            {
+                commandName = STR_TITLE_EDITOR_COMMAND_LOAD_MISSING_SCENARIO;
             }
             set_format_arg(0, uintptr_t, name);
             break;

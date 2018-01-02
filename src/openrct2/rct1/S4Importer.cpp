@@ -56,7 +56,7 @@
 #include "../world/Climate.h"
 #include "../world/footpath.h"
 #include "../world/map_animation.h"
-#include "../world/park.h"
+#include "../world/Park.h"
 #include "../world/Entrance.h"
 #include "../world/LargeScenery.h"
 #include "../world/scenery.h"
@@ -268,6 +268,8 @@ public:
         {
             desc.title = name.c_str();
         }
+
+        String::Set(dst->internal_name, sizeof(dst->internal_name), desc.title);
 
         rct_string_id localisedStringIds[3];
         if (language_get_localised_scenario_strings(desc.title, localisedStringIds))
@@ -509,9 +511,12 @@ private:
         for (size_t i = 0; i < Util::CountOf(_s4.rides); i++)
         {
             rct1_ride * ride = &_s4.rides[i];
-            if (ride->type != RCT1_RIDE_TYPE_NULL && RCT1::RideTypeUsesVehicles(ride->type))
+            if (ride->type != RCT1_RIDE_TYPE_NULL)
             {
-                AddEntryForVehicleType(ride->type, ride->vehicle_type);
+                if (RCT1::RideTypeUsesVehicles(ride->type))
+                    AddEntryForVehicleType(ride->type, ride->vehicle_type);
+                else
+                    AddEntryForRideType(ride->type);
             }
         }
     }
@@ -722,7 +727,8 @@ private:
         // This can happen with hacked parks
         if (rideEntry == nullptr)
         {
-            dst = nullptr;
+            log_warning("Discarding ride with invalid ride entry");
+            dst->type = RIDE_TYPE_NULL;
             return;
         }
 
@@ -1014,6 +1020,16 @@ private:
                     dst->vehicle_colours_extended[i] = colourSchemeCopyDescriptor.colour3;
                 }
             }
+        }
+
+        // In RCT1 and AA, the maze was always hedges.
+        // LL has 4 types, like RCT2. For LL, only guard against invalid values.
+        if (dst->type == RIDE_TYPE_MAZE)
+        {
+            if (_gameVersion < FILE_VERSION_RCT1_LL || src->track_colour_supports[0] > 3)
+                dst->track_colour_supports[0] = MAZE_WALL_TYPE_HEDGE;
+            else
+                dst->track_colour_supports[0] = src->track_colour_supports[0];
         }
     }
 
